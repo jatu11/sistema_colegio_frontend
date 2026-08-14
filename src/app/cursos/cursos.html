@@ -1,0 +1,153 @@
+<p-toast></p-toast>
+<div class="min-h-screen bg-bluegray-50 p-5">
+  <div class="flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="text-bluegray-800 m-0">Malla Curricular</h1>
+      <p class="text-500 mt-1">Especialidad: Informática (3ro de Bachillerato)</p>
+    </div>
+    <p-button
+      label="Volver al Panel"
+      icon="pi pi-arrow-left"
+      styleClass="p-button-outlined"
+      routerLink="/dashboard"
+    ></p-button>
+  </div>
+
+  <p-card styleClass="shadow-2">
+    <!-- Tabla de PrimeNG -->
+    <p-table [value]="cursos" [tableStyle]="{ 'min-width': '50rem' }">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Asignatura Técnica</th>
+          <th style="width: 15%" class="text-center">Horas/Semana</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-curso>
+        <tr>
+          <td class="font-bold text-blue-600">{{ curso.id }}</td>
+          <td>
+            <span class="font-bold block">{{ curso.nombre }}</span>
+            <span class="text-sm text-500">{{ curso.descripcion }}</span>
+          </td>
+          <td class="text-center">
+            <span class="bg-green-100 text-green-800 px-2 py-1 border-round text-sm font-bold">
+              <i class="pi pi-clock mr-1 text-xs"></i> {{ curso.horas_semanales }} h
+            </span>
+          </td>
+          <td class="text-center">
+            <!-- Le pasamos todo el objeto 'curso' a las funciones -->
+            <p-button
+              icon="pi pi-pencil"
+              styleClass="p-button-rounded p-button-text p-button-info mr-2"
+              (onClick)="abrirModalEditar(curso)"
+            ></p-button>
+            <p-button
+              icon="pi pi-trash"
+              styleClass="p-button-rounded p-button-text p-button-danger"
+              (onClick)="eliminar(curso)"
+            ></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <!-- Mensaje cuando está vacío -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4" class="text-center p-5 text-500">
+            <i class="pi pi-folder-open text-4xl mb-2 block"></i>
+            Aún no hay asignaturas registradas. El backend devolverá los datos aquí.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <div class="mt-4 text-right">
+      <p-button
+        label="Nueva Asignatura"
+        icon="pi pi-plus"
+        severity="success"
+        (onClick)="abrirModal()"
+      ></p-button>
+    </div>
+  </p-card>
+</div>
+
+<!-- Modal para Crear Asignatura -->
+<p-dialog
+  [header]="modoEdicion ? 'Editar Asignatura' : 'Registrar Nueva Asignatura'"
+  [(visible)]="mostrarModal"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <div class="flex flex-column gap-3 mt-3">
+    <!-- Nombre de la Materia -->
+    <div class="flex flex-column gap-2">
+      <label for="nombre" class="font-bold">Nombre de la Asignatura</label>
+      <!-- class="uppercase" transforma el texto visualmente mientras escribes -->
+      <input
+        pInputText
+        id="nombre"
+        [(ngModel)]="nuevoCurso.nombre"
+        class="uppercase"
+        placeholder="EJ: REDES LOCALES"
+      />
+    </div>
+
+    <!-- Nivel y Especialidad (Usando los nuevos Dropdowns) -->
+    <div class="flex flex-column gap-2">
+      <label for="nivel" class="font-bold">Nivel Académico</label>
+      <p-dropdown
+        [options]="niveles"
+        [(ngModel)]="nuevoCurso.nivel"
+        appendTo="body"
+        placeholder="Seleccione el Nivel"
+        styleClass="w-full"
+      ></p-dropdown>
+    </div>
+    <div class="flex flex-column gap-2">
+      <label for="especialidad" class="font-bold">Especialidad</label>
+      <p-dropdown
+        [options]="especialidades"
+        [(ngModel)]="nuevoCurso.especialidad"
+        appendTo="body"
+        placeholder="Seleccione Especialidad"
+        [showClear]="true"
+        styleClass="w-full"
+      ></p-dropdown>
+    </div>
+
+    <!-- Horas Semanales -->
+    <div class="flex flex-column gap-2">
+      <label for="horas" class="font-bold">Horas/Semana</label>
+      <p-inputNumber
+        id="horas"
+        [(ngModel)]="nuevoCurso.horas_semanales"
+        [min]="1"
+        [max]="20"
+        [showButtons]="true"
+        styleClass="w-full"
+      ></p-inputNumber>
+    </div>
+  </div>
+
+  <!-- Botones de Acción -->
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      icon="pi pi-times"
+      styleClass="p-button-text p-button-secondary"
+      (onClick)="mostrarModal = false"
+    ></p-button>
+    <p-button
+      label="Guardar"
+      icon="pi pi-check"
+      styleClass="p-button-success"
+      (onClick)="guardarCurso()"
+      [disabled]="!nuevoCurso.nombre"
+      [loading]="guardando"
+    ></p-button>
+  </ng-template>
+</p-dialog>

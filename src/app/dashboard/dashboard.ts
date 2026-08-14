@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 // Componentes de diseño de PrimeNG
 import { ButtonModule } from 'primeng/button';
@@ -10,7 +10,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, ButtonModule, CardModule, ToolbarModule],
+  imports: [CommonModule, ButtonModule, CardModule, ToolbarModule, RouterModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
