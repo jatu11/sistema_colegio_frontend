@@ -7,7 +7,7 @@ export const routes: Routes = [
   { path: 'login', component: Login },
 
   // 4. Cuando la ruta sea '/login', muestra la pantalla de acceso
-  { path: 'Dashboard', component: Dashboard },
+  { path: 'dashboard', component: Dashboard },
 
   // 2. Si entran a la raíz (la URL vacía), redirige automáticamente al login
   { path: '', redirectTo: 'login', pathMatch: 'full' },

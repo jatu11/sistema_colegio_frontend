@@ -1,1 +1,68 @@
-<p>dashboard works!</p>
+<!-- Fondo general claro -->
+<div class="min-h-screen bg-bluegray-50">
+    
+  <!-- Barra Superior Institucional -->
+  <p-toolbar styleClass="bg-bluegray-900 border-none shadow-2 px-5 py-3 border-noround">
+    <div class="p-toolbar-group-start">
+      <i class="pi pi-compass text-white text-2xl mr-3"></i>
+      <span class="text-white font-bold text-xl">Comandancia Académica</span>
+    </div>
+    <div class="p-toolbar-group-end gap-3 flex align-items-center">
+      <!-- Muestra el rol en una etiqueta visual -->
+      <span class="text-white font-medium bg-blue-600 px-3 py-1 border-round text-sm">
+        Rol: {{ rolUsuario }}
+      </span>
+      <!-- Botón de Cerrar Sesión -->
+      <p-button icon="pi pi-power-off" severity="danger" (onClick)="cerrarSesion()" title="Cerrar Sesión"></p-button>
+    </div>
+  </p-toolbar>
+
+  <!-- Área de Trabajo Principal -->
+  <div class="p-5">
+    <h1 class="text-bluegray-800 mt-0 mb-4">Panel de Control General</h1>
+
+    <div class="grid">
+      
+      <!-- Módulo Cadetes -->
+      <div class="col-12 md:col-4">
+        <p-card header="Gestión de Cadetes" subheader="Registro y control de disciplina" styleClass="shadow-2 h-full">
+          <ng-template pTemplate="header">
+            <div class="bg-blue-100 h-8rem flex justify-content-center align-items-center border-round-top">
+              <i class="pi pi-users text-blue-700" style="font-size: 3.5rem;"></i>
+            </div>
+          </ng-template>
+          <p>Administra los expedientes y el estado del cuerpo de cadetes.</p>
+          <p-button label="Ingresar al Módulo" icon="pi pi-arrow-right" styleClass="p-button-outlined w-full mt-3"></p-button>
+        </p-card>
+      </div>
+
+      <!-- Módulo Informática (Curricular) -->
+      <div class="col-12 md:col-4">
+        <p-card header="Malla Curricular" subheader="Tercer Año de Bachillerato - Informática" styleClass="shadow-2 h-full">
+          <ng-template pTemplate="header">
+            <div class="bg-indigo-100 h-8rem flex justify-content-center align-items-center border-round-top">
+              <i class="pi pi-desktop text-indigo-700" style="font-size: 3.5rem;"></i>
+            </div>
+          </ng-template>
+          <p>Configuración de módulos formativos, desarrollo de software y bases de datos.</p>
+          <p-button label="Gestionar Cursos" icon="pi pi-arrow-right" styleClass="p-button-outlined p-button-indigo w-full mt-3"></p-button>
+        </p-card>
+      </div>
+
+      <!-- Módulo Administrativo (Solo Admin) -->
+      <div class="col-12 md:col-4">
+        <p-card header="Administración" subheader="Control de Usuarios" styleClass="shadow-2 h-full">
+          <ng-template pTemplate="header">
+            <div class="bg-bluegray-200 h-8rem flex justify-content-center align-items-center border-round-top">
+              <i class="pi pi-cog text-bluegray-700" style="font-size: 3.5rem;"></i>
+            </div>
+          </ng-template>
+          <p>Gestión exclusiva para personal administrativo y docentes autorizados.</p>
+          <p-button label="Configuración" icon="pi pi-arrow-right" styleClass="p-button-outlined p-button-secondary w-full mt-3"></p-button>
+        </p-card>
+      </div>
+
+    </div>
+  </div>
+
+</div>
