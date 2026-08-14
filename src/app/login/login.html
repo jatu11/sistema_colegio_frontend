@@ -1,0 +1,34 @@
+<!-- Fondo de pantalla oscura usando utilidades de PrimeFlex -->
+<div class="flex align-items-center justify-content-center min-h-screen bg-bluegray-900">
+    
+  <!-- Tarjeta central elevada -->
+  <p-card header="Sistema de Gestión Naval" [style]="{ width: '400px', 'box-shadow': '0 4px 8px 0 rgba(0,0,0,0.5)' }">
+      
+      <!-- Subtítulo -->
+      <p class="text-center text-500 mb-4">Acceso exclusivo para personal docente, administrativo y cadetes.</p>
+
+      <!-- Mensaje de error (solo se muestra si las credenciales fallan) -->
+      <div *ngIf="mensajeError" class="p-mb-3 bg-red-100 text-red-700 p-3 border-round mb-3 text-sm text-center">
+        <i class="pi pi-times-circle mr-2"></i> {{ mensajeError }}
+      </div>
+
+      <!-- Formulario -->
+      <div class="flex flex-column gap-4">
+          <!-- Campo Cédula -->
+          <div class="flex flex-column gap-2">
+              <label for="cedula" class="font-bold">Número de Cédula</label>
+              <input pInputText id="cedula" [(ngModel)]="cedula" placeholder="Ej: 0999999999" />
+          </div>
+
+          <!-- Campo Contraseña -->
+          <div class="flex flex-column gap-2">
+              <label for="password" class="font-bold">Contraseña</label>
+              <p-password [(ngModel)]="password" [feedback]="false" [toggleMask]="true" placeholder="Ingresa tu clave"></p-password>
+          </div>
+
+          <!-- Botón de Acción -->
+          <p-button label="Ingresar al Sistema" icon="pi pi-sign-in" styleClass="w-full mt-2" (onClick)="iniciarSesion()"></p-button>
+      </div>
+  </p-card>
+
+</div>

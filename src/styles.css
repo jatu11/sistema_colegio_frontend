@@ -1,1 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
+/* Eliminamos los márgenes por defecto y forzamos el color azul marino oscuro */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #0f172a; /* Tono azul marino / slate oscuro */
+    font-family: var(--font-family); /* Toma la tipografía de PrimeNG */
+}
