@@ -26,7 +26,7 @@
     <h1 class="text-bluegray-800 mt-0 mb-4">Panel de Control General</h1>
 
     <div class="grid">
-      <!-- Módulo Cadetes -->
+      <!-- Módulo Cadetes (Visible para todos por ahora) -->
       <div class="col-12 md:col-4">
         <p-card
           header="Gestión de Cadetes"
@@ -34,9 +34,7 @@
           styleClass="shadow-2 h-full"
         >
           <ng-template pTemplate="header">
-            <div
-              class="bg-blue-100 h-8rem flex justify-content-center align-items-center border-round-top"
-            >
+            <div class="bg-blue-100 h-8rem flex justify-content-center align-items-center border-round-top">
               <i class="pi pi-users text-blue-700" style="font-size: 3.5rem"></i>
             </div>
           </ng-template>
@@ -49,17 +47,15 @@
         </p-card>
       </div>
 
-      <!-- Módulo Informática (Curricular) -->
-      <div class="col-12 md:col-4">
+      <!-- 🔒 Módulo Informática (Malla Curricular) -> Solo ADMIN y ADMINISTRACION -->
+      <div class="col-12 md:col-4" *ngIf="rolUsuario === 'ADMIN' || rolUsuario === 'ADMINISTRACION'">
         <p-card
           header="Malla Curricular"
-          subheader="Tercer Año de Bachillerato - Informática"
+          subheader="Gestión de áreas académicas"
           styleClass="shadow-2 h-full"
         >
           <ng-template pTemplate="header">
-            <div
-              class="bg-indigo-100 h-8rem flex justify-content-center align-items-center border-round-top"
-            >
+            <div class="bg-indigo-100 h-8rem flex justify-content-center align-items-center border-round-top">
               <i class="pi pi-desktop text-indigo-700" style="font-size: 3.5rem"></i>
             </div>
           </ng-template>
@@ -73,25 +69,25 @@
         </p-card>
       </div>
 
-      <!-- Módulo Administrativo (Solo Admin) -->
-      <div class="col-12 md:col-4">
+      <!-- 🔒 Módulo Administrativo -> Solo ADMIN -->
+      <div class="col-12 md:col-4" *ngIf="rolUsuario === 'ADMIN'">
         <p-card
           header="Administración"
-          subheader="Control de Usuarios"
+          subheader="Control de Personal"
           styleClass="shadow-2 h-full"
         >
           <ng-template pTemplate="header">
-            <div
-              class="bg-bluegray-200 h-8rem flex justify-content-center align-items-center border-round-top"
-            >
+            <div class="bg-bluegray-200 h-8rem flex justify-content-center align-items-center border-round-top">
               <i class="pi pi-cog text-bluegray-700" style="font-size: 3.5rem"></i>
             </div>
           </ng-template>
           <p>Gestión exclusiva para personal administrativo y docentes autorizados.</p>
+          <!-- 👇 Le agregué el routerLink para que te lleve al componente que creamos -->
           <p-button
-            label="Configuración"
+            label="Configuración de Usuarios"
             icon="pi pi-arrow-right"
             styleClass="p-button-outlined p-button-secondary w-full mt-3"
+            routerLink="/usuarios"
           ></p-button>
         </p-card>
       </div>

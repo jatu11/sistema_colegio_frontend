@@ -1,0 +1,71 @@
+<p-toast></p-toast>
+
+<div class="min-h-screen bg-bluegray-50 p-5">
+  
+  <!-- Cabecera -->
+  <div class="flex flex-column md:flex-row justify-content-between align-items-start md:align-items-center mb-4 gap-3">
+    <div>
+      <h1 class="text-bluegray-800 m-0">Gestión de Personal</h1>
+      <p class="text-500 mt-1">Registro de docentes y personal administrativo</p>
+    </div>
+    <div class="flex gap-2">
+      <p-button label="Volver al Panel" icon="pi pi-arrow-left" styleClass="p-button-outlined" routerLink="/dashboard"></p-button>
+    </div>
+  </div>
+
+  <!-- Formulario de Registro -->
+  <p-card styleClass="shadow-2 border-round-xl max-w-50rem mx-auto">
+    <h2 class="text-xl text-bluegray-700 mt-0 mb-4 border-bottom-1 border-300 pb-2">Registrar Nuevo Usuario</h2>
+    
+    <div class="flex flex-column gap-4">
+      
+      <!-- Cédula -->
+      <div class="flex flex-column gap-2">
+        <label for="cedula" class="font-bold">Cédula de Identidad</label>
+        <input pInputText id="cedula" [(ngModel)]="nuevoUsuario.cedula" placeholder="Ej: 0987654321" maxlength="10" />
+      </div>
+
+      <!-- Nombres y Apellidos -->
+      <div class="flex gap-3">
+        <div class="flex flex-column gap-2 w-full">
+          <label for="nombres" class="font-bold">Nombres</label>
+          <input pInputText id="nombres" [(ngModel)]="nuevoUsuario.nombres" class="uppercase" placeholder="Ej: NADYA CRUZKAYA" />
+        </div>
+        <div class="flex flex-column gap-2 w-full">
+          <label for="apellidos" class="font-bold">Apellidos</label>
+          <input pInputText id="apellidos" [(ngModel)]="nuevoUsuario.apellidos" class="uppercase" placeholder="Ej: GÓMEZ SUÁREZ" />
+        </div>
+      </div>
+
+      <!-- Rol Institucional -->
+      <div class="flex flex-column gap-2">
+        <label for="rol" class="font-bold">Rol en el Sistema</label>
+        <p-dropdown [options]="roles" [(ngModel)]="nuevoUsuario.rol" (onChange)="alCambiarRol()" styleClass="w-full"></p-dropdown>
+      </div>
+
+      <!-- 👇 CAMPOS DINÁMICOS -->
+      
+      <!-- Campo Cargo (Aparece solo para ADMINISTRACION) -->
+      <div class="flex flex-column gap-2 animacion-suave" *ngIf="nuevoUsuario.rol === 'ADMINISTRACION'">
+        <label for="cargo" class="font-bold text-indigo-600">Seleccione el Cargo</label>
+        <p-dropdown [options]="cargosAdministrativos" [(ngModel)]="nuevoUsuario.cargo" placeholder="Ej: Rector" styleClass="w-full"></p-dropdown>
+      </div>
+
+      <!-- Campo Área Académica (Aparece solo para DOCENTE) -->
+      <div class="flex flex-column gap-2 animacion-suave" *ngIf="nuevoUsuario.rol === 'DOCENTE'">
+        <label for="area" class="font-bold text-green-600">Área Académica</label>
+        <p-dropdown [options]="areas" [(ngModel)]="nuevoUsuario.area_academica" placeholder="Seleccione el Área" styleClass="w-full"></p-dropdown>
+      </div>
+
+      <!-- Botón de Guardar -->
+      <div class="flex justify-content-end mt-3">
+        <p-button label="Registrar Usuario" icon="pi pi-user-plus" severity="primary" 
+                 [loading]="guardando" 
+                 [disabled]="!nuevoUsuario.cedula || !nuevoUsuario.nombres || !nuevoUsuario.apellidos" 
+                 (onClick)="guardarUsuario()">
+        </p-button>
+      </div>
+
+    </div>
+  </p-card>
+</div>

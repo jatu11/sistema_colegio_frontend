@@ -34,11 +34,11 @@ export class Login {
     // Apuntamos al puerto 3000 donde vive NestJS
     this.http.post<any>('http://localhost:3000/auth/login', credenciales).subscribe({
       next: (respuesta) => {
-        // Guardamos el token encriptado en el navegador
-        localStorage.setItem('access_token', respuesta.access_token);
-        localStorage.setItem('usuario_rol', respuesta.usuario.rol);
+        // 👇 1. Guardamos el token con el nombre 'token' para que el Dashboard lo encuentre
+        localStorage.setItem('token', respuesta.access_token);
+        
+        // 👇 2. ELIMINAMOS la línea de usuario_rol porque el Dashboard ya se encarga de desencriptarlo
 
-        // Lo enviamos al panel de control (que crearemos en el futuro)
         console.log('¡Login exitoso! Token guardado.');
         this.router.navigate(['/dashboard']);
       },

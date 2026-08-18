@@ -15,20 +15,49 @@ import { ToolbarModule } from 'primeng/toolbar';
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
-  router = inject(Router);
-  rolUsuario: string | null = '';
+  // Variables para guardar la información del usuario
+  rolUsuario: string = '';
+  nombreUsuario: string = '';
+
+  constructor(private router: Router) {}
 
   ngOnInit() {
-    // Al cargar la pantalla, extraemos el rol de la memoria del navegador
-    this.rolUsuario = localStorage.getItem('usuario_rol');
+    this.extraerInfoUsuario();
+  }
+
+  extraerInfoUsuario() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        // Desencriptamos el JWT tal como lo hicimos en el Guardián
+        const payloadBase64Url = token.split('.')[1];
+        const payloadBase64 = payloadBase64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          window
+            .atob(payloadBase64)
+            .split('')
+            .map(function (c) {
+              return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join(''),
+        );
+
+        const usuarioInfo = JSON.parse(jsonPayload);
+        console.log('Información dentro del Token:', usuarioInfo);
+        
+        // Guardamos los datos para usarlos en el HTML
+        this.rolUsuario = usuarioInfo.rol;
+
+        // Opcional: Extraemos el primer nombre para darle la bienvenida
+        this.nombreUsuario = usuarioInfo.nombres.split(' ')[0];
+      } catch (e) {
+        console.error('Error al leer el token en el dashboard');
+      }
+    }
   }
 
   cerrarSesion() {
-    // 1. Destruimos las credenciales de la memoria
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('usuario_rol');
-
-    // 2. Expulsamos al usuario a la pantalla de acceso
+    localStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
 }
