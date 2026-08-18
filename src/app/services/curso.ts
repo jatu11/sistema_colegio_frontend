@@ -7,8 +7,11 @@ export interface Curso {
   id?: number;
   nombre: string;
   nivel: string;
-  especialidad?: string; // El signo de interrogación indica que puede ser nulo
-  horas_semanales: number; // 👈 Agregamos la propiedad aquí
+  area: string;
+  tipo_modulo: string;
+  familia_profesional?: string | null;
+  figura_profesional?: string | null;
+  horas_semanales: number;
 }
 
 @Injectable({
@@ -33,5 +36,10 @@ export class CursoService {
 
   eliminarCurso(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  // 👇 El detonador de la magia
+  autoGenerarMalla(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/autogenerar-soporte`, {});
   }
 }

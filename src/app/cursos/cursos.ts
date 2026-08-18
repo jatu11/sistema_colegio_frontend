@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CursoService, Curso } from '../services/curso';
 
-// Módulos de PrimeNG
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
@@ -12,9 +11,9 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DropdownModule } from 'primeng/dropdown';
-
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { ChartModule } from 'primeng/chart';
 
 @Component({
   selector: 'app-cursos',
@@ -31,6 +30,7 @@ import { MessageService } from 'primeng/api';
     InputNumberModule,
     DropdownModule,
     ToastModule,
+    ChartModule,
   ],
   providers: [MessageService],
   templateUrl: './cursos.html',
@@ -38,14 +38,18 @@ import { MessageService } from 'primeng/api';
 })
 export class Cursos implements OnInit {
   private cursoService = inject(CursoService);
-  private messageService = inject(MessageService); //mensajero
-  cursos: Curso[] = [];
-  guardando: boolean = false; // 👈 Nuevo interruptor para el botón de carga
-  modoEdicion: boolean = false; // 👈 Nuevo interruptor
+  private messageService = inject(MessageService);
 
-  // Variables para controlar el Modal
+  cursos: Curso[] = [];
+  cursosMostrados: Curso[] = [];
+
+  filtroNivel: string = '';
+  filtroFigura: string = '';
+
   mostrarModal: boolean = false;
-  // 👇 Las listas para los selectores
+  guardando: boolean = false;
+  modoEdicion: boolean = false;
+
   niveles = [
     '8vo Año Básica',
     '9no Año Básica',
@@ -54,27 +58,107 @@ export class Cursos implements OnInit {
     '2do Bachillerato',
     '3ro Bachillerato',
   ];
-  especialidades = ['Informática', 'Contabilidad', 'Ciencias', 'EBS'];
+  areas = [
+    'Informática',
+    'Matemática',
+    'Lengua y Literatura',
+    'Ciencias Naturales',
+    'Ciencias Sociales',
+    'Lengua Extranjera',
+    'Contabilidad',
+  ];
+  tiposModulo = ['Tronco Común', 'Módulo General', 'Especialización', 'Práctico Experimental'];
+
+  // 👇 Se agregaron las nuevas familias y figuras
+  familias = ['Tecnologías', 'Administrativa y Financiera'];
+  figuras = ['Soporte Informático', 'Gestión financiera y contable'];
+
   nuevoCurso: Curso = this.cursoVacio();
+
+  datosGrafico: any;
+  opcionesGrafico: any;
 
   ngOnInit() {
     this.cargarCursos();
+    this.configurarOpcionesGrafico();
   }
 
   cargarCursos() {
     this.cursoService.obtenerCursos().subscribe({
-      next: (data) => (this.cursos = data),
+      next: (data) => {
+        this.cursos = data;
+        this.aplicarFiltros();
+      },
       error: (err) => console.error(err),
     });
   }
 
-  // Inicializa el formulario con valores por defecto para agilizar tu trabajo
+  // 👇 NUEVO CANDADO LÓGICO: Decide si se muestra o no la tabla
+  get mostrarResultados(): boolean {
+    if (!this.filtroNivel) return false; // Si no hay nivel, oculta todo
+    if (this.filtroNivel.includes('Bachillerato') && !this.filtroFigura) return false; // Si es bachillerato pero no hay figura, oculta todo
+    return true;
+  }
+
+  aplicarFiltros() {
+    // Si el candado dice que no se debe mostrar, vaciamos la tabla y nos detenemos
+    if (!this.mostrarResultados) {
+      this.cursosMostrados = [];
+      this.actualizarGrafico();
+      return;
+    }
+
+    this.cursosMostrados = this.cursos.filter((curso) => {
+      const coincideNivel = curso.nivel === this.filtroNivel;
+
+      if (!this.filtroNivel.includes('Bachillerato')) {
+        return coincideNivel;
+      }
+
+      const esTroncoComun = curso.area === 'Tronco Común' || !curso.figura_profesional;
+      const coincideFigura = curso.figura_profesional === this.filtroFigura;
+
+      return coincideNivel && (esTroncoComun || coincideFigura);
+    });
+
+    this.actualizarGrafico();
+  }
+
+  actualizarGrafico() {
+    const nombresMaterias = this.cursosMostrados.map((c) => c.nombre);
+    const horasSemanales = this.cursosMostrados.map((c) => c.horas_semanales);
+
+    this.datosGrafico = {
+      labels: nombresMaterias,
+      datasets: [
+        {
+          label: 'Horas Semanales',
+          backgroundColor: '#3b82f6',
+          borderColor: '#1d4ed8',
+          data: horasSemanales,
+        },
+      ],
+    };
+  }
+
+  configurarOpcionesGrafico() {
+    this.opcionesGrafico = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+    };
+  }
+
   cursoVacio(): Curso {
     return {
       nombre: '',
-      nivel: '3ro de Bachillerato',
-      especialidad: 'Informática',
-      horas_semanales: 2,
+      nivel: '1ro Bachillerato',
+      area: '',
+      tipo_modulo: 'Tronco Común',
+      familia_profesional: null,
+      figura_profesional: null,
+      horas_semanales: 0,
     };
   }
 
@@ -85,48 +169,21 @@ export class Cursos implements OnInit {
   }
 
   abrirModalEditar(curso: Curso) {
-    // Hacemos una copia exacta del curso para no editar la tabla en tiempo real hasta guardar
     this.nuevoCurso = { ...curso };
-    this.modoEdicion = true; // Estamos en modo edición
+    this.modoEdicion = true;
     this.mostrarModal = true;
   }
 
-  // 4. Modificamos guardarCurso para que decida si hace POST o PUT
-  guardarCurso() {
-    this.nuevoCurso.nombre = this.nuevoCurso.nombre.toUpperCase();
-    this.guardando = true;
-
-    // Si estamos en modo edición y tenemos un ID...
-    if (this.modoEdicion && this.nuevoCurso.id) {
-      this.cursoService.actualizarCurso(this.nuevoCurso.id, this.nuevoCurso).subscribe({
-        next: () => {
-          this.finalizarGuardado('¡Actualizado!', 'Asignatura editada correctamente.');
-        },
-        error: () => this.manejarErrorGuardado(),
-      });
-    } else {
-      // Si estamos creando uno nuevo...
-      this.cursoService.crearCurso(this.nuevoCurso).subscribe({
-        next: () => {
-          this.finalizarGuardado('¡Éxito!', 'Asignatura guardada correctamente en la malla.');
-        },
-        error: () => this.manejarErrorGuardado(),
-      });
-    }
-  }
-
-  // 3. Nueva función para el botón rojo de basura
   eliminar(curso: Curso) {
-    // Pedimos confirmación nativa del navegador para evitar accidentes
     if (confirm(`¿Estás seguro de que deseas eliminar la asignatura: ${curso.nombre}?`)) {
       this.cursoService.eliminarCurso(curso.id!).subscribe({
         next: () => {
           this.messageService.add({
             severity: 'success',
             summary: 'Eliminado',
-            detail: 'Asignatura borrada de la malla.',
+            detail: 'Asignatura borrada.',
           });
-          this.cargarCursos(); // Recargamos la tabla
+          this.cargarCursos();
         },
         error: (err) =>
           this.messageService.add({
@@ -138,7 +195,24 @@ export class Cursos implements OnInit {
     }
   }
 
-  // Funciones auxiliares para no repetir código
+  guardarCurso() {
+    this.nuevoCurso.nombre = this.nuevoCurso.nombre.toUpperCase();
+    this.guardando = true;
+
+    if (this.modoEdicion && this.nuevoCurso.id) {
+      this.cursoService.actualizarCurso(this.nuevoCurso.id, this.nuevoCurso).subscribe({
+        next: () => this.finalizarGuardado('¡Actualizado!', 'Asignatura editada correctamente.'),
+        error: () => this.manejarErrorGuardado(),
+      });
+    } else {
+      this.cursoService.crearCurso(this.nuevoCurso).subscribe({
+        next: () =>
+          this.finalizarGuardado('¡Éxito!', 'Asignatura guardada correctamente en la malla.'),
+        error: () => this.manejarErrorGuardado(),
+      });
+    }
+  }
+
   finalizarGuardado(titulo: string, detalle: string) {
     this.guardando = false;
     this.mostrarModal = false;
