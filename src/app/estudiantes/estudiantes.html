@@ -1,0 +1,136 @@
+<div class="card">
+  <h2 class="mb-3">Gestión de Cadetes</h2>
+
+  <!-- Barra de acciones superior -->
+  <div class="flex justify-content-between mb-4">
+    <p>Listado oficial del personal estudiantil.</p>
+
+    <!-- Este botón más adelante abrirá el formulario Modal -->
+    <p-button
+      label="Matricular Nuevo Cadete"
+      icon="pi pi-user-plus"
+      severity="success"
+      (click)="abrirModalNuevoCadete()"
+    ></p-button>
+  </div>
+
+  <!-- Tabla de PrimeNG -->
+  <p-table
+    [value]="estudiantes"
+    [paginator]="true"
+    [rows]="10"
+    styleClass="p-datatable-striped"
+    responsiveLayout="scroll"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Matrícula Naval</th>
+        <th>Cédula</th>
+        <th>Apellidos y Nombres</th>
+        <th>Curso</th>
+        <th>T. Sangre</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-estudiante>
+      <tr>
+        <td>
+          <strong>{{ estudiante.matricula }}</strong>
+        </td>
+        <td>{{ estudiante.cedula }}</td>
+        <td>{{ estudiante.apellidos }} {{ estudiante.nombres }}</td>
+        <td>{{ estudiante.curso }}</td>
+        <td>{{ estudiante.tipoSangre || 'N/A' }}</td>
+        <td>
+          <!-- Indicador visual de estado -->
+          <span [ngStyle]="{ color: estudiante.activo ? 'green' : 'red', 'font-weight': 'bold' }">
+            {{ estudiante.activo ? 'ACTIVO' : 'BAJA' }}
+          </span>
+        </td>
+        <td>
+          <p-button
+            icon="pi pi-eye"
+            styleClass="p-button-rounded p-button-text p-button-info"
+            pTooltip="Ver Detalles"
+          ></p-button>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="text-center">No se encontraron cadetes registrados.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- Ventana Modal de Matrícula -->
+<p-dialog
+  header="Ficha de Matriculación de Cadete"
+  [(visible)]="mostrarModal"
+  [modal]="true"
+  [style]="{ width: '40rem' }"
+>
+  <div class="flex flex-column gap-3 mt-3">
+    <div class="flex flex-column gap-1">
+      <label for="matricula">Matrícula Naval (Código)</label>
+      <input
+        pInputText
+        id="matricula"
+        [(ngModel)]="nuevoCadete.matricula"
+        placeholder="Ej: NAV-2026-002"
+      />
+    </div>
+
+    <div class="flex flex-column gap-1">
+      <label for="cedula">Cédula de Identidad</label>
+      <input pInputText id="cedula" [(ngModel)]="nuevoCadete.cedula" placeholder="10 dígitos" />
+    </div>
+
+    <div class="flex gap-3">
+      <div class="flex flex-column gap-1 w-full">
+        <label for="nombres">Nombres Completos</label>
+        <input pInputText id="nombres" [(ngModel)]="nuevoCadete.nombres" />
+      </div>
+      <div class="flex flex-column gap-1 w-full">
+        <label for="apellidos">Apellidos</label>
+        <input pInputText id="apellidos" [(ngModel)]="nuevoCadete.apellidos" />
+      </div>
+    </div>
+
+    <div class="flex gap-3">
+      <div class="flex flex-column gap-1 w-full">
+        <label for="curso">Curso</label>
+        <input pInputText id="curso" [(ngModel)]="nuevoCadete.curso" />
+      </div>
+      <div class="flex flex-column gap-1 w-full">
+        <label for="tipoSangre">Tipo de Sangre</label>
+        <input
+          pInputText
+          id="tipoSangre"
+          [(ngModel)]="nuevoCadete.tipoSangre"
+          placeholder="Ej: O+, A-"
+        />
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      icon="pi pi-times"
+      [text]="true"
+      severity="secondary"
+      (click)="mostrarModal = false"
+    ></p-button>
+    <p-button
+      label="Guardar Registro"
+      icon="pi pi-check"
+      severity="success"
+      (click)="guardarCadete()"
+    ></p-button>
+  </ng-template>
+</p-dialog>

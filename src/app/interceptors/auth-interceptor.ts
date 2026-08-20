@@ -1,20 +1,26 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // 1. Buscamos el token en el almacenamiento local
-  const token = localStorage.getItem('token');
+  // Ponemos este emoji afuera del if para saber que el interceptor despertó
+  console.log(`🚀 [Interceptor] Despierto e interceptando: ${req.url}`);
 
-  // 2. Si existe el token, clonamos la petición original y le agregamos la cabecera
-  if (token) {
-    const peticionClonada = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    // Enviamos la petición modificada al backend
-    return next(peticionClonada);
+  // 👇 LA REGLA MÁGICA: "¿Estamos en el navegador?"
+  if (typeof window !== 'undefined' && window.localStorage) {
+    
+    // Cambia 'token' por la llave que uses en tu login si es diferente
+    const token = localStorage.getItem('token'); 
+    console.log(`🔑 [Interceptor] ¿Hay token en el navegador?:`, token ? 'SÍ' : 'NO');
+
+    if (token) {
+      const peticionClonada = req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      return next(peticionClonada);
+    }
   }
 
-  // Si no hay token (ej. cuando recién está haciendo login), la dejamos pasar normal
+  // Si no hay token o estamos en el servidor, dejamos pasar la petición normal
   return next(req);
 };

@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 // 1. Importamos el motor de animaciones
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { authInterceptor } from './auth-interceptor';
+import { authInterceptor } from './interceptors/auth-interceptor';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
